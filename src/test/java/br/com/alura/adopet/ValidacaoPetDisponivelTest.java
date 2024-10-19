@@ -1,6 +1,7 @@
 package br.com.alura.adopet;
 
 import br.com.alura.adopet.api.dto.SolicitacaoAdocaoDto;
+import br.com.alura.adopet.api.exception.ValidacaoException;
 import br.com.alura.adopet.api.model.Pet;
 import br.com.alura.adopet.api.repository.PetRepository;
 import br.com.alura.adopet.api.validacoes.ValidacaoPetDisponivel;
@@ -38,5 +39,17 @@ class ValidacaoPetDisponivelTest {
 
 		//ASSERT + ACT
 		Assertions.assertDoesNotThrow(() -> validacao.validar(dto));
+	}
+
+	@Test
+	void naoDeveriaPermitirSolicitacaoDeAdocaoPet() {
+
+		// ARRANGE
+		BDDMockito.given(petRepository.getReferenceById(dto.idPet())).willReturn(pet);
+		BDDMockito.given(pet.getAdotado()).willReturn(true);
+
+
+		//ASSERT + ACT
+		Assertions.assertThrows(ValidacaoException.class,() -> validacao.validar(dto));
 	}
 }
